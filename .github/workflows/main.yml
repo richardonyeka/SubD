@@ -1,0 +1,35 @@
+# This file tells GitHub Actions how to publish a package for you.
+name: Publish Dummy Package
+
+# This allows you to run the publisher manually from the Actions tab.
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-dummy-package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # This gives the action permission to publish
+    steps:
+      - name: Create Dummy Package and Publish
+        run: |
+          # 1. Create a folder for our package
+          mkdir my-dummy-package
+          cd my-dummy-package
+          
+          # 2. Create the package.json file needed by npm
+          echo '{
+            "name": "@richardonyeka/my-dummy-package",
+            "version": "1.0.0",
+            "description": "A test package to delete.",
+            "publishConfig": {
+              "registry": "https://npm.pkg.github.com/"
+            }
+          }' > package.json
+
+          # 3. Tell npm to use the GitHub Packages registry
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > .npmrc
+          
+          # 4. Publish the package!
+          npm publish
